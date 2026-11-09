@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, StyleSheet, View } from 'react-native';
 import type { Task } from '../home.types';
 import { RF, RS } from '../../../core/utils/responsive';
 import { taskTheme } from '../../../core/theme/taskTheme';
 import { formatTime12Hour } from '../../../core/utils/dateTime';
+import AppButton from '../../../components/AppButton';
+import AppText from '../../../components/AppText';
 
 interface TaskCardProps {
     task: Task;
@@ -18,50 +20,47 @@ const TaskCard = ({ task, dateLabel, onComplete, onEdit, onDelete }: TaskCardPro
 
     return (
         <View style={styles.card}>
-            <TouchableOpacity
+            <AppButton
                 style={[styles.checkbox, task.isCompleted && styles.checkboxCompleted]}
                 onPress={() => onComplete(task)}
                 accessibilityRole="checkbox"
                 accessibilityState={{ checked: task.isCompleted }}
                 accessibilityLabel={task.isCompleted ? 'Mark task active' : 'Complete task'}
             >
-                {task.isCompleted ? <Text style={styles.checkmark}>✓</Text> : null}
-            </TouchableOpacity>
+                {task.isCompleted ? <AppText style={styles.checkmark}>✓</AppText> : null}
+            </AppButton>
             <View style={styles.details}>
-                <Text style={[styles.title, task.isCompleted && styles.completedTitle]}>
+                <AppText style={[styles.title, task.isCompleted && styles.completedTitle]}>
                     {task.title}
-                </Text>
-                {task.description ? <Text style={styles.description}>{task.description}</Text> : null}
+                </AppText>
+                {task.description ? <AppText style={styles.description}>{task.description}</AppText> : null}
                 <View style={styles.metadata}>
-                    <Text style={styles.dateLabel}>
+                    <AppText style={styles.dateLabel}>
                         {dateLabel}{task.dueTime ? ` · ${formatTime12Hour(task.dueTime)}` : ''}
-                    </Text>
-                    <Text style={styles.priority}>
-                        {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
-                    </Text>
+                    </AppText>
                     {task.reminderEnabled && task.isCompleted ? (
-                        <Text style={styles.priority}>Reminder paused</Text>
+                        <AppText style={styles.reminderPaused}>Reminder paused</AppText>
                     ) : task.reminderEnabled ? (
-                        <Text style={task.notificationId ? styles.reminder : styles.reminderMissing}>
+                        <AppText style={task.notificationId ? styles.reminder : styles.reminderMissing}>
                             {task.notificationId ? 'Reminder set' : 'Reminder needs date + time'}
-                        </Text>
+                        </AppText>
                     ) : null}
                 </View>
                 {task.dateAmbiguous ? (
-                    <Text style={styles.ambiguity}>
+                    <AppText style={styles.ambiguity}>
                         Date needs clarification{task.ambiguityNote ? `: ${task.ambiguityNote}` : '.'}
-                    </Text>
+                    </AppText>
                 ) : null}
                 <View style={styles.actions}>
-                    <TouchableOpacity onPress={() => onEdit(task)} accessibilityRole="button">
-                        <Text style={styles.action}>Edit / reschedule</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
+                    <AppButton onPress={() => onEdit(task)} accessibilityRole="button">
+                        <AppText style={styles.action}>Edit / reschedule</AppText>
+                    </AppButton>
+                    <AppButton
                         onPress={() => setIsConfirmingDelete(true)}
                         accessibilityRole="button"
                     >
-                        <Text style={styles.deleteAction}>Delete</Text>
-                    </TouchableOpacity>
+                        <AppText style={styles.deleteAction}>Delete</AppText>
+                    </AppButton>
                 </View>
             </View>
 
@@ -73,24 +72,24 @@ const TaskCard = ({ task, dateLabel, onComplete, onEdit, onDelete }: TaskCardPro
             >
                 <View style={styles.modalBackdrop}>
                     <View style={styles.confirmCard}>
-                        <Text style={styles.confirmTitle}>Delete this task?</Text>
-                        <Text style={styles.confirmMessage}>{task.title}</Text>
+                        <AppText style={styles.confirmTitle}>Delete this task?</AppText>
+                        <AppText style={styles.confirmMessage}>{task.title}</AppText>
                         <View style={styles.confirmActions}>
-                            <TouchableOpacity
+                            <AppButton
                                 style={styles.cancelButton}
                                 onPress={() => setIsConfirmingDelete(false)}
                             >
-                                <Text style={styles.cancelText}>Cancel</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
+                                <AppText style={styles.cancelText}>Cancel</AppText>
+                            </AppButton>
+                            <AppButton
                                 style={styles.confirmDeleteButton}
                                 onPress={() => {
                                     setIsConfirmingDelete(false);
                                     onDelete(task);
                                 }}
                             >
-                                <Text style={styles.confirmDeleteText}>Delete</Text>
-                            </TouchableOpacity>
+                                <AppText style={styles.confirmDeleteText}>Delete</AppText>
+                            </AppButton>
                         </View>
                     </View>
                 </View>
@@ -109,6 +108,7 @@ const styles = StyleSheet.create({
         borderRadius: RS(taskTheme.radius.md),
         padding: RS(taskTheme.spacing.lg),
         marginBottom: RS(taskTheme.spacing.sm),
+
     },
     checkbox: {
         width: RS(24),
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
         fontSize: RF(12),
         fontWeight: '600',
     },
-    priority: {
+    reminderPaused: {
         color: taskTheme.colors.primary,
         fontSize: RF(12),
         fontWeight: '600',

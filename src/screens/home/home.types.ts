@@ -1,4 +1,4 @@
-export type TaskPriority = 'low' | 'medium' | 'high';
+export type TaskPriority = 'high';
 
 export interface ExtractedTask {
     title: string;

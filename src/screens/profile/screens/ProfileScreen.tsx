@@ -1,11 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import AppText from '../../../components/AppText';
  
 const ProfileScreen = () => (
     <View style={styles.container}>
         <View style={styles.content}>
-            <Text style={styles.title}>Profile</Text>
-            <Text style={styles.description}>Profile features can be added here later.</Text>
+            <AppText style={styles.title}>Profile</AppText>
+            <AppText style={styles.description}>Profile features can be added here later.</AppText>
         </View>
     </View>
 );

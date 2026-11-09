@@ -1,4 +1,4 @@
-import type { ExtractedTask, TaskPriority } from './home.types';
+import type { ExtractedTask } from './home.types';
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
     typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -13,9 +13,6 @@ const isValidDate = (value: string): boolean => {
         && date.getUTCMonth() === month - 1
         && date.getUTCDate() === day;
 };
-
-const isTaskPriority = (value: unknown): value is TaskPriority =>
-    value === 'low' || value === 'medium' || value === 'high';
 
 export const validateExtractedTasks = (value: unknown): ExtractedTask[] => {
     if (!Array.isArray(value)) {
@@ -32,8 +29,6 @@ export const validateExtractedTasks = (value: unknown): ExtractedTask[] => {
             description,
             dueDate,
             dueTime,
-            reminderEnabled,
-            priority,
             dateAmbiguous,
             ambiguityNote,
         } = item;
@@ -53,12 +48,6 @@ export const validateExtractedTasks = (value: unknown): ExtractedTask[] => {
         ) {
             throw new Error(`Task ${index + 1} has an invalid due time.`);
         }
-        if (typeof reminderEnabled !== 'boolean') {
-            throw new Error(`Task ${index + 1} has an invalid reminder setting.`);
-        }
-        if (!isTaskPriority(priority)) {
-            throw new Error(`Task ${index + 1} has an invalid priority.`);
-        }
         if (typeof dateAmbiguous !== 'boolean') {
             throw new Error(`Task ${index + 1} is missing its date ambiguity status.`);
         }
@@ -76,8 +65,8 @@ export const validateExtractedTasks = (value: unknown): ExtractedTask[] => {
                 : undefined,
             dueDate,
             dueTime,
-            reminderEnabled,
-            priority,
+            reminderEnabled: true,
+            priority: 'high',
             dateAmbiguous,
             ambiguityNote: typeof ambiguityNote === 'string' && ambiguityNote.trim()
                 ? ambiguityNote.trim()

@@ -8,7 +8,7 @@ export const TASK_EXTRACTION_SYSTEM_PROMPT = [
     'Phrases such as morning or afternoon do not specify an exact time; return null for dueTime.',
     'When a date has more than one reasonable interpretation, do not guess: set dueDate to null, dateAmbiguous to true, and explain briefly in ambiguityNote.',
     'Otherwise set dateAmbiguous to false and ambiguityNote to null.',
-    'Set reminderEnabled to true only when the speaker explicitly asks for a reminder or notification.',
-    'Use priority low, medium, or high; default to medium unless the speaker clearly signals urgency or low importance.',
+    'Set reminderEnabled to true by default for every task.',
+    'All tasks have high priority.',
     'Return only a JSON array matching the supplied schema. Do not include markdown or commentary.',
 ].join(' ');

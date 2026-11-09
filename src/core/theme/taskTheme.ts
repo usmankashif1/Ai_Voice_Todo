@@ -13,6 +13,9 @@ export const taskTheme = {
         warning: '#805B1E',
         success: '#347250',
         white: '#FFFFFF',
+        reminderTrackOff: '#D8D9DE',
+        reminderTrackOn: '#15171C',
+        reminderThumbShadow: 'rgba(0, 0, 0, 0.25)',
     },
     spacing: {
         xs: 4,

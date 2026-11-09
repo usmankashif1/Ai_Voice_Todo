@@ -40,6 +40,7 @@ const getDatabase = (): Promise<SQLite.SQLiteDatabase> => {
                     );
                     CREATE INDEX IF NOT EXISTS tasks_due_date_idx ON tasks(due_date, due_time);
                 `);
+                await database.runAsync("UPDATE tasks SET priority = 'high' WHERE priority != 'high'");
                 return database;
             })
             .catch(error => {
@@ -57,7 +58,7 @@ const toTask = (row: TaskRow): Task => ({
     dueDate: row.due_date,
     dueTime: row.due_time,
     reminderEnabled: row.reminder_enabled === 1,
-    priority: row.priority,
+    priority: 'high',
     dateAmbiguous: row.date_ambiguous === 1,
     ambiguityNote: row.ambiguity_note ?? undefined,
     createdAt: row.created_at,
@@ -100,7 +101,7 @@ export const insertTasks = async (drafts: ExtractedTask[]): Promise<Task[]> => {
                 task.dueDate,
                 task.dueTime,
                 task.reminderEnabled ? 1 : 0,
-                task.priority,
+                'high',
                 task.dateAmbiguous ? 1 : 0,
                 task.ambiguityNote ?? null,
                 task.createdAt,
@@ -125,7 +126,7 @@ export const updateStoredTask = async (task: Task): Promise<void> => {
         task.dueDate,
         task.dueTime,
         task.reminderEnabled ? 1 : 0,
-        task.priority,
+        'high',
         task.dateAmbiguous ? 1 : 0,
         task.ambiguityNote ?? null,
         task.isCompleted ? 1 : 0,

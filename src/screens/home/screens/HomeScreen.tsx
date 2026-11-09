@@ -6,8 +6,6 @@ import {
     ScrollView,
     SectionList,
     StyleSheet,
-    Text,
-    TouchableOpacity,
     View,
 } from 'react-native';
 import { RF, RH, RS, RW } from '../../../core/utils/responsive';
@@ -20,6 +18,8 @@ import type { ExtractedTask, Task, TaskDateLabel, TaskSection } from '../home.ty
 import useTasks from '../hooks/useTasks';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import AppButton from '../../../components/AppButton';
+import AppText from '../../../components/AppText';
 
 const sectionOrder: TaskDateLabel[] = ['Overdue', 'Today', 'Tomorrow', 'Upcoming', 'No Date'];
 
@@ -90,57 +90,58 @@ const HomeScreen = () => {
 
     const handleConfirmVoiceTasks = async (tasks: ExtractedTask[]) => addTasks(tasks);
 
-    
+
     const renderListHeader = () => (
         <View>
             <View style={styles.titleRow}>
                 <View>
-                    <Text style={styles.title}>VoiceDo AI</Text>
-                    <Text style={{
+                    <AppText style={styles.title}>VoiceDo AI</AppText>
+                    <AppText style={{
                         ...styles.title, fontSize: RF(14), fontWeight: "400",
-                    }}>Turn your thoughts into tasks</Text>
+                    }}>Turn your thoughts into tasks</AppText>
                 </View>
-                <TouchableOpacity
+                <AppButton
                     style={styles.addButton}
                     onPress={() => setIsCreateTaskOpen(true)}
                     accessibilityRole="button"
                     accessibilityLabel="Create a task"
                 >
-                    <Text style={styles.addButtonText}>+</Text>
-                </TouchableOpacity>
+                    <AppText style={styles.addButtonText}>+</AppText>
+                </AppButton>
             </View>
 
             <View style={styles.listHeading}>
-                <Text style={styles.listTitle}>Your tasks</Text>
-                <Text style={styles.taskCount}>{items.length}</Text>
+                <AppText style={styles.listTitle}>Your tasks</AppText>
+                <AppText style={styles.taskCount}>{items.length}</AppText>
             </View>
 
             <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
+                style={styles.categoryScroll}
                 contentContainerStyle={styles.categoryRow}
             >
                 {sectionOrder.map(category => {
                     const isSelected = selectedCategory === category;
                     return (
-                        <TouchableOpacity
+                        <AppButton
                             key={category}
                             style={[styles.categoryButton, isSelected && styles.selectedCategoryButton]}
                             onPress={() => setSelectedCategory(category)}
                             accessibilityRole="button"
                             accessibilityState={{ selected: isSelected }}
                         >
-                            <Text style={[styles.categoryText, isSelected && styles.selectedCategoryText]}>
+                            <AppText style={[styles.categoryText, isSelected && styles.selectedCategoryText]}>
                                 {category} ({categoryCounts.get(category) ?? 0})
-                            </Text>
-                        </TouchableOpacity>
+                            </AppText>
+                        </AppButton>
                     );
                 })}
             </ScrollView>
 
-            {error ? <Text style={styles.errorText}>{error}</Text> : null}
-            {reminderWarning ? <Text style={styles.warningText}>{reminderWarning}</Text> : null}
-            {loading ? <Text style={styles.emptyText}>Loading tasks…</Text> : null}
+            {error ? <AppText style={styles.errorText}>{error}</AppText> : null}
+            {reminderWarning ? <AppText style={styles.warningText}>{reminderWarning}</AppText> : null}
+            {loading ? <AppText style={styles.emptyText}>Loading tasks…</AppText> : null}
         </View>
     );
 
@@ -165,15 +166,15 @@ const HomeScreen = () => {
                         />
                     )}
                     renderSectionHeader={({ section }) => (
-                        <Text style={styles.sectionTitle}>{section.title}</Text>
+                        <AppText style={styles.sectionTitle}>{section.title}</AppText>
                     )}
                     ListHeaderComponent={renderListHeader()}
                     ListEmptyComponent={
                         loading ? <View /> : (
                             <View style={styles.emptyState}>
-                                <Text style={styles.emptyText}>
+                                <AppText style={styles.emptyText}>
                                     No {selectedCategory.toLowerCase()} tasks.
-                                </Text>
+                                </AppText>
                             </View>
                         )
                     }
@@ -193,7 +194,7 @@ const HomeScreen = () => {
             </KeyboardAvoidingView>
 
 
-            <TouchableOpacity
+            <AppButton
                 style={[
                     styles.floatingVoiceButton,
                     { bottom: insets.bottom + RH(taskTheme.spacing.xl) },
@@ -202,9 +203,8 @@ const HomeScreen = () => {
                 accessibilityRole="button"
                 accessibilityLabel="Create tasks by voice"
             >
-                {/* <Text style={styles.floatingVoiceIcon}>🎙</Text> */}
                 <FontAwesome5 name="microphone" size={RS(26)} color="white" />
-            </TouchableOpacity>
+            </AppButton>
 
             <TaskEditorModal
                 key={editingTask?.id ?? (isCreateTaskOpen ? 'create' : 'closed')}
@@ -252,8 +252,8 @@ const styles = StyleSheet.create({
         color: taskTheme.colors.text,
         fontSize: RF(18),
         fontWeight: '800',
-        // lineHeight: RF(36),
         letterSpacing: -0.5,
+
     },
     addButton: {
         width: RS(44),
@@ -288,9 +288,15 @@ const styles = StyleSheet.create({
         marginTop: RH(taskTheme.spacing.xxl),
         marginBottom: RH(taskTheme.spacing.md),
     },
+    categoryScroll: {
+        marginHorizontal: -RW(taskTheme.spacing.xl),
+    },
     categoryRow: {
         gap: RW(taskTheme.spacing.sm),
         paddingBottom: RH(taskTheme.spacing.sm),
+        paddingHorizontal: RW(taskTheme.spacing.xl),
+        flexGrow: 1,
+        alignItems: 'center',
     },
     categoryButton: {
         minHeight: RH(40),
@@ -317,6 +323,7 @@ const styles = StyleSheet.create({
         color: taskTheme.colors.text,
         fontSize: RF(21),
         fontWeight: '800',
+
     },
     taskCount: {
         color: taskTheme.colors.textSecondary,

@@ -5,10 +5,7 @@ import {
     Platform,
     ScrollView,
     StyleSheet,
-    Switch,
-    Text,
     TextInput,
-    TouchableOpacity,
     View,
 } from 'react-native';
 import DateTimePicker, {
@@ -18,7 +15,10 @@ import DateTimePicker, {
 import { RF, RS } from '../../../core/utils/responsive';
 import { taskTheme } from '../../../core/theme/taskTheme';
 import { formatTime12Hour } from '../../../core/utils/dateTime';
-import type { ExtractedTask, Task, TaskPriority } from '../home.types';
+import AnimatedToggle from '../../../components/AnimatedToggle';
+import AppButton from '../../../components/AppButton';
+import AppText from '../../../components/AppText';
+import type { ExtractedTask, Task } from '../home.types';
 import { validateExtractedTasks } from '../taskValidation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -30,8 +30,6 @@ interface TaskEditorModalProps {
     onCancel: () => void;
     onSave: (task: ExtractedTask) => Promise<boolean>;
 }
-
-const priorities: TaskPriority[] = ['low', 'medium', 'high'];
 
 type PickerMode = 'date' | 'time';
 
@@ -82,8 +80,7 @@ const TaskEditorModal = ({
     const [description, setDescription] = useState(task?.description ?? '');
     const [dueDate, setDueDate] = useState(task?.dueDate ?? '');
     const [dueTime, setDueTime] = useState(task?.dueTime ?? '');
-    const [reminderEnabled, setReminderEnabled] = useState(task?.reminderEnabled ?? false);
-    const [priority, setPriority] = useState<TaskPriority>(task?.priority ?? 'medium');
+    const [reminderEnabled, setReminderEnabled] = useState(task?.reminderEnabled ?? true);
     const [error, setError] = useState('');
     const [activePicker, setActivePicker] = useState<PickerMode | null>(null);
 
@@ -123,7 +120,7 @@ const TaskEditorModal = ({
                 dueDate: dueDate.trim() || null,
                 dueTime: dueTime.trim() || null,
                 reminderEnabled,
-                priority,
+                priority: 'high',
                 dateAmbiguous: dueDate.trim() ? false : task?.dateAmbiguous ?? false,
                 ambiguityNote: dueDate.trim() ? undefined : task?.ambiguityNote,
             }]);
@@ -158,8 +155,8 @@ const TaskEditorModal = ({
                                 { paddingBottom: RS(36) + insets.bottom },
                             ]}
                         >
-                        <Text style={styles.title}>{modalTitle}</Text>
-                        <Text style={styles.label}>Title</Text>
+                        <AppText style={styles.title}>{modalTitle}</AppText>
+                        <AppText style={styles.label}>Title</AppText>
                         <TextInput
                             style={styles.input}
                             value={title}
@@ -168,7 +165,7 @@ const TaskEditorModal = ({
                             accessibilityLabel="Task title"
                         />
 
-                        <Text style={styles.label}>Description</Text>
+                        <AppText style={styles.label}>Description</AppText>
                         <TextInput
                             style={[styles.input, styles.descriptionInput]}
                             value={description}
@@ -181,52 +178,52 @@ const TaskEditorModal = ({
 
                         <View style={styles.dateTimeRow}>
                             <View style={styles.dateField}>
-                                <Text style={styles.label}>Due date</Text>
+                                <AppText style={styles.label}>Due date</AppText>
                                 <View style={styles.pickerValueRow}>
-                                    <TouchableOpacity
+                                    <AppButton
                                         style={styles.pickerValue}
                                         onPress={() => openPicker('date')}
                                         accessibilityRole="button"
                                         accessibilityLabel="Select due date"
                                     >
-                                        <Text style={[styles.pickerText, !dueDate && styles.placeholder]}>
+                                        <AppText style={[styles.pickerText, !dueDate && styles.placeholder]}>
                                             {formatDateLabel(dueDate)}
-                                        </Text>
-                                    </TouchableOpacity>
+                                        </AppText>
+                                    </AppButton>
                                     {dueDate ? (
-                                        <TouchableOpacity
+                                        <AppButton
                                             style={styles.clearPicker}
                                             onPress={() => setDueDate('')}
                                             accessibilityRole="button"
                                             accessibilityLabel="Clear due date"
                                         >
-                                            <Text style={styles.clearPickerText}>×</Text>
-                                        </TouchableOpacity>
+                                            <AppText style={styles.clearPickerText}>×</AppText>
+                                        </AppButton>
                                     ) : null}
                                 </View>
                             </View>
                             <View style={styles.timeField}>
-                                <Text style={styles.label}>Time</Text>
+                                <AppText style={styles.label}>Time</AppText>
                                 <View style={styles.pickerValueRow}>
-                                    <TouchableOpacity
+                                    <AppButton
                                         style={styles.pickerValue}
                                         onPress={() => openPicker('time')}
                                         accessibilityRole="button"
                                         accessibilityLabel="Select due time"
                                     >
-                                        <Text style={[styles.pickerText, !dueTime && styles.placeholder]}>
+                                        <AppText style={[styles.pickerText, !dueTime && styles.placeholder]}>
                                             {formatTimeLabel(dueTime)}
-                                        </Text>
-                                    </TouchableOpacity>
+                                        </AppText>
+                                    </AppButton>
                                     {dueTime ? (
-                                        <TouchableOpacity
+                                        <AppButton
                                             style={styles.clearPicker}
                                             onPress={() => setDueTime('')}
                                             accessibilityRole="button"
                                             accessibilityLabel="Clear due time"
                                         >
-                                            <Text style={styles.clearPickerText}>×</Text>
-                                        </TouchableOpacity>
+                                            <AppText style={styles.clearPickerText}>×</AppText>
+                                        </AppButton>
                                     ) : null}
                                 </View>
                             </View>
@@ -241,74 +238,47 @@ const TaskEditorModal = ({
                                     onValueChange={handlePickerChange}
                                     themeVariant="light"
                                 />
-                                <TouchableOpacity
+                                <AppButton
                                     style={styles.pickerDone}
                                     onPress={() => setActivePicker(null)}
                                 >
-                                    <Text style={styles.pickerDoneText}>Done</Text>
-                                </TouchableOpacity>
+                                    <AppText style={styles.pickerDoneText}>Done</AppText>
+                                </AppButton>
                             </View>
                         ) : null}
-                        <Text style={styles.hint}>Choose a date and time for this task.</Text>
-
-                        <Text style={styles.label}>Priority</Text>
-                        <View style={styles.priorityRow}>
-                            {priorities.map(value => (
-                                <TouchableOpacity
-                                    key={value}
-                                    style={[
-                                        styles.priorityButton,
-                                        priority === value && styles.prioritySelected,
-                                    ]}
-                                    onPress={() => setPriority(value)}
-                                    accessibilityRole="radio"
-                                    accessibilityState={{ selected: priority === value }}
-                                >
-                                    <Text
-                                        style={[
-                                            styles.priorityText,
-                                            priority === value && styles.priorityTextSelected,
-                                        ]}
-                                    >
-                                        {value.charAt(0).toUpperCase() + value.slice(1)}
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
+                        <AppText style={styles.hint}>Choose a date and time for this task.</AppText>
 
                         <View style={styles.reminderRow}>
                             <View style={styles.reminderCopy}>
-                                <Text style={styles.label}>Reminder</Text>
-                                <Text style={styles.hint}>Requires a future date and time.</Text>
+                                <AppText style={styles.label}>Reminder</AppText>
+                                <AppText style={[styles.hint, styles.reminderHint]}>
+                                    Requires a future date and time.
+                                </AppText>
                             </View>
-                            <Switch
+                            <AnimatedToggle
                                 value={reminderEnabled}
                                 onValueChange={setReminderEnabled}
-                                trackColor={{
-                                    false: taskTheme.colors.borderStrong,
-                                    true: taskTheme.colors.primary,
-                                }}
                                 accessibilityLabel="Enable task reminder"
                             />
                         </View>
 
-                        {error ? <Text style={styles.error}>{error}</Text> : null}
+                        {error ? <AppText style={styles.error}>{error}</AppText> : null}
 
                         <View style={styles.actions}>
-                            <TouchableOpacity
+                            <AppButton
                                 style={styles.cancelButton}
                                 onPress={onCancel}
                                 disabled={saving}
                             >
-                                <Text style={styles.cancelText}>Cancel</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
+                                <AppText style={styles.cancelText}>Cancel</AppText>
+                            </AppButton>
+                            <AppButton
                                 style={[styles.saveButton, saving && styles.disabledButton]}
                                 onPress={handleSave}
                                 disabled={saving}
                             >
-                                <Text style={styles.saveText}>{saving ? 'Saving…' : 'Save task'}</Text>
-                            </TouchableOpacity>
+                                <AppText style={styles.saveText}>{saving ? 'Saving…' : 'Save task'}</AppText>
+                            </AppButton>
                         </View>
                         </ScrollView>
                     </View>
@@ -425,31 +395,6 @@ const styles = StyleSheet.create({
         lineHeight: RF(17),
         marginBottom: RS(taskTheme.spacing.md),
     },
-    priorityRow: {
-        flexDirection: 'row',
-        gap: RS(taskTheme.spacing.sm),
-        marginBottom: RS(taskTheme.spacing.lg),
-    },
-    priorityButton: {
-        minHeight: RS(40),
-        justifyContent: 'center',
-        borderRadius: RS(taskTheme.radius.sm),
-        borderWidth: 1,
-        borderColor: taskTheme.colors.borderStrong,
-        paddingHorizontal: RS(taskTheme.spacing.md),
-    },
-    prioritySelected: {
-        borderColor: taskTheme.colors.primary,
-        backgroundColor: taskTheme.colors.primary,
-    },
-    priorityText: {
-        color: taskTheme.colors.textSecondary,
-        fontSize: RF(13),
-        fontWeight: '600',
-    },
-    priorityTextSelected: {
-        color: taskTheme.colors.white,
-    },
     reminderRow: {
         minHeight: RS(56),
         flexDirection: 'row',
@@ -458,6 +403,10 @@ const styles = StyleSheet.create({
     },
     reminderCopy: {
         flex: 1,
+        justifyContent: 'center',
+    },
+    reminderHint: {
+        marginBottom: 0,
     },
     error: {
         color: taskTheme.colors.danger,

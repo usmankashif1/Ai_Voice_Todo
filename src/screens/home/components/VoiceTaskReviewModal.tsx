@@ -4,8 +4,6 @@ import {
     Modal,
     ScrollView,
     StyleSheet,
-    Text,
-    TouchableOpacity,
     View,
     useWindowDimensions,
 } from 'react-native';
@@ -19,12 +17,15 @@ import { extractTasksFromText } from '../taskExtractionService';
 import type { ExtractedTask } from '../home.types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { formatTime12Hour } from '../../../core/utils/dateTime';
+import AppButton from '../../../components/AppButton';
+import AppText from '../../../components/AppText';
 
 interface VoiceTaskReviewModalProps {
     visible: boolean;
     onClose: () => void;
     onConfirm: (tasks: ExtractedTask[]) => Promise<boolean>;
 }
+
 
 const VoiceTaskReviewModal = ({
     visible,
@@ -52,6 +53,8 @@ const VoiceTaskReviewModal = ({
         () => Array.from({ length: 7 }, () => new Animated.Value(0.25)),
     );
 
+
+
     useEffect(() => {
         if (!isRecording) {
             waveValues.forEach(value => value.setValue(0.25));
@@ -78,15 +81,23 @@ const VoiceTaskReviewModal = ({
         return () => animations.forEach(animation => animation.stop());
     }, [isRecording, waveValues]);
 
+
+
+
     useEffect(() => {
         if (visible) isClosing.current = false;
     }, [visible]);
+
+
+
 
     const handleTranscription = async (transcription: string, signal: AbortSignal) => {
         setError('');
         const extractedTasks = await extractTasksFromText(transcription, signal);
         if (!signal.aborted) setTasks(extractedTasks);
     };
+
+
 
     const handleConfirm = async () => {
         if (!tasks.length || busy) return;
@@ -104,6 +115,8 @@ const VoiceTaskReviewModal = ({
         }
     };
 
+
+
     const handleClose = async () => {
         if (isSaving || isClosing.current) return;
         isClosing.current = true;
@@ -116,6 +129,8 @@ const VoiceTaskReviewModal = ({
         setError('');
         onClose();
     };
+
+
 
     return (
         <Modal
@@ -136,25 +151,25 @@ const VoiceTaskReviewModal = ({
                 >
                     <View style={styles.heading}>
                         <View style={styles.headingCopy}>
-                            <Text style={styles.title}>Create tasks by voice</Text>
-                            <Text style={styles.subtitle}>
+                            <AppText style={styles.title}>Create tasks by voice</AppText>
+                            <AppText style={styles.subtitle}>
                                 Speak naturally. Review the tasks before adding them.
-                            </Text>
+                            </AppText>
                         </View>
-                        <TouchableOpacity
+                        <AppButton
                             style={[styles.closeButton, isSaving && styles.disabled]}
                             onPress={handleClose}
                             disabled={isSaving}
                             accessibilityRole="button"
                             accessibilityLabel="Close voice task creation"
                         >
-                            <Text style={styles.closeText}>×</Text>
-                        </TouchableOpacity>
+                            <AppText style={styles.closeText}>×</AppText>
+                        </AppButton>
                     </View>
 
                     {tasks.length ? (
                         <>
-                            <Text style={styles.reviewTitle}>Review tasks ({tasks.length})</Text>
+                            <AppText style={styles.reviewTitle}>Review tasks ({tasks.length})</AppText>
                             <ScrollView
                                 style={[styles.taskList, { maxHeight: maxTaskListHeight }]}
                                 contentContainerStyle={styles.taskListContent}
@@ -163,26 +178,25 @@ const VoiceTaskReviewModal = ({
                                 {tasks.map((task, index) => (
                                     <View key={`${task.title}-${index}`} style={styles.taskCard}>
                                         <View style={styles.taskCopy}>
-                                            <Text style={styles.taskTitle}>{task.title}</Text>
+                                            <AppText style={styles.taskTitle}>{task.title}</AppText>
                                             {task.description ? (
-                                                <Text style={styles.taskDescription}>
+                                                <AppText style={styles.taskDescription}>
                                                     {task.description}
-                                                </Text>
+                                                </AppText>
                                             ) : null}
-                                            <Text style={styles.taskDetails}>
+                                            <AppText style={styles.taskDetails}>
                                                 {[
                                                     task.dueDate,
                                                     task.dueTime ? formatTime12Hour(task.dueTime) : null,
-                                                    task.priority,
                                                 ].filter(Boolean).join(' · ')}
-                                            </Text>
+                                            </AppText>
                                             {task.dateAmbiguous && task.ambiguityNote ? (
-                                                <Text style={styles.taskWarning}>
+                                                <AppText style={styles.taskWarning}>
                                                     {task.ambiguityNote}
-                                                </Text>
+                                                </AppText>
                                             ) : null}
                                         </View>
-                                        <TouchableOpacity
+                                        <AppButton
                                             style={styles.removeButton}
                                             onPress={() => setTasks(current =>
                                                 current.filter((_, taskIndex) => taskIndex !== index),
@@ -190,21 +204,21 @@ const VoiceTaskReviewModal = ({
                                             accessibilityRole="button"
                                             accessibilityLabel={`Remove ${task.title}`}
                                         >
-                                            <Text style={styles.removeText}>×</Text>
-                                        </TouchableOpacity>
+                                            <AppText style={styles.removeText}>×</AppText>
+                                        </AppButton>
                                     </View>
                                 ))}
                             </ScrollView>
 
                             <View style={styles.footer}>
-                                <TouchableOpacity
+                                <AppButton
                                     style={styles.cancelButton}
                                     onPress={handleClose}
                                     disabled={busy}
                                 >
-                                    <Text style={styles.cancelText}>Cancel</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
+                                    <AppText style={styles.cancelText}>Cancel</AppText>
+                                </AppButton>
+                                <AppButton
                                     style={[
                                         styles.confirmButton,
                                         (!tasks.length || busy) && styles.disabled,
@@ -212,10 +226,10 @@ const VoiceTaskReviewModal = ({
                                     onPress={() => void handleConfirm()}
                                     disabled={!tasks.length || busy}
                                 >
-                                    <Text style={styles.confirmText}>
+                                    <AppText style={styles.confirmText}>
                                         {isSaving ? 'Saving…' : `Add ${tasks.length} tasks`}
-                                    </Text>
-                                </TouchableOpacity>
+                                    </AppText>
+                                </AppButton>
                             </View>
                         </>
                     ) : null}
@@ -257,14 +271,14 @@ const VoiceTaskReviewModal = ({
                     </View>
 
                     {isStarting ? (
-                        <Text style={styles.status}>Starting microphone…</Text>
+                        <AppText style={styles.status}>Starting microphone…</AppText>
                     ) : null}
                     {isProcessing ? (
-                        <Text style={styles.status}>Transcribing and preparing tasks…</Text>
+                        <AppText style={styles.status}>Transcribing and preparing tasks…</AppText>
                     ) : null}
-                    {error ? <Text style={styles.error}>{error}</Text> : null}
+                    {error ? <AppText style={styles.error}>{error}</AppText> : null}
                     {error && !busy ? (
-                        <TouchableOpacity
+                        <AppButton
                             style={styles.retryButton}
                             onPress={() => {
                                 setError('');
@@ -272,12 +286,12 @@ const VoiceTaskReviewModal = ({
                             }}
                             accessibilityRole="button"
                         >
-                            <Text style={styles.retryText}>Try recording again</Text>
-                        </TouchableOpacity>
+                            <AppText style={styles.retryText}>Try recording again</AppText>
+                        </AppButton>
                     ) : null}
 
                     {!tasks.length ? (
-                        <Text style={styles.emptyHint}>
+                        <AppText style={styles.emptyHint}>
                             {isRecording
                                 ? 'Tap Stop recording when you are finished.'
                                 : isStarting
@@ -285,7 +299,7 @@ const VoiceTaskReviewModal = ({
                                     : isProcessing
                                         ? 'Please wait while your tasks are prepared.'
                                         : 'Recording starts automatically.'}
-                        </Text>
+                        </AppText>
                     ) : null}
                 </View>
             </View>

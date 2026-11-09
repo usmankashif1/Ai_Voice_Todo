@@ -6,10 +6,12 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
 import { transcribeAudioWithGroq } from '../core/api/groqVoiceService';
 import { taskTheme } from '../core/theme/taskTheme';
+import AppButton from './AppButton';
+import AppText from './AppText';
 
 export interface VoiceInputHandle {
     cancel: () => Promise<void>;
@@ -148,34 +150,34 @@ export const VoiceInputButton = forwardRef<VoiceInputHandle, VoiceInputProps>(({
     return (
         <View style={styles.container}>
             {isTranscribing ? (
-                <TouchableOpacity
+                <AppButton
                     style={[styles.button, styles.buttonDisabled]}
                     disabled
                     accessibilityRole="button"
                     accessibilityLabel="Preparing tasks"
                 >
-                    <Text style={styles.buttonText}>Preparing...</Text>
-                </TouchableOpacity>
+                    <AppText style={styles.buttonText}>Preparing...</AppText>
+                </AppButton>
             ) : isRecording ? (
-                <TouchableOpacity
+                <AppButton
                     style={[styles.button, styles.recordingActive]}
                     onPress={() => void stopAndTranscribe()}
                     accessibilityRole="button"
                     accessibilityLabel="Stop recording and transcribe"
                 >
                     <View style={styles.recordingPulse} />
-                    <Text style={styles.buttonText}>Stop recording</Text>
-                </TouchableOpacity>
+                    <AppText style={styles.buttonText}>Stop recording</AppText>
+                </AppButton>
             ) : hideIdleButton ? null : (
-                <TouchableOpacity
+                <AppButton
                     style={[styles.button, disabled && styles.buttonDisabled]}
                     onPress={beginRecording}
                     disabled={disabled}
                     accessibilityRole="button"
                     accessibilityLabel="Start voice recording"
                 >
-                    <Text style={styles.buttonText}>🎤 Speak</Text>
-                </TouchableOpacity>
+                    <AppText style={styles.buttonText}>🎤 Speak</AppText>
+                </AppButton>
             )}
         </View>
     );
