@@ -1,0 +1,30 @@
+export const taskTheme = {
+    colors: {
+        background: '#F6F7F9',
+        surface: '#FFFFFF',
+        surfaceMuted: '#FAFBFC',
+        text: '#252A40',
+        textSecondary: '#697284',
+        border: '#E1E4EA',
+        borderStrong: '#D5D9E1',
+        // primary: '#8A591E',
+        primary: '#000000',
+        danger: '#A12E2E',
+        warning: '#805B1E',
+        success: '#347250',
+        white: '#FFFFFF',
+    },
+    spacing: {
+        xs: 4,
+        sm: 8,
+        md: 12,
+        lg: 16,
+        xl: 20,
+        xxl: 28,
+    },
+    radius: {
+        sm: 8,
+        md: 12,
+        lg: 16,
+    },
+} as const;
